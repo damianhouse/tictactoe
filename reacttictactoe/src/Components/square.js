@@ -1,18 +1,27 @@
 import React, { Component } from 'react';
-import App from '../App'
 
 class Square extends Component {
-  _buildSquare() {
-    return ( <div key={this.props.index} onClick={() => this.handleClick(this.props.index)} className="square">
-            <div>{this.props.cell}</div>
-        </div>
-      )
+  handleClick(index) {
+    this.props.handleClick(index)
   }
 
   render() {
-     return (<div key={this.props.index} onClick={() => this.handleClick(this.props.index)} className="square">
-             <div>{this.props.cell}</div>
-         </div>)
+    let state = this.props.state
+    if(state.winner === null) {
+      return <div onClick={this.handleClick.bind(this, this.props.index)} className="square">
+          <div>{this.props.cell}</div>
+      </div>
+    } else {
+      if(state.winner[0] === this.props.index || state.winner[1] === this.props.index || state.winner[2] === this.props.index) {
+        return <div onClick={this.handleClick.bind(this, this.props.index)} className="square green">
+            <div>{this.props.cell}</div>
+        </div>
+      } else {
+        return <div onClick={this.handleClick.bind(this, this.props.index)} className="square">
+            <div>{this.props.cell}</div>
+        </div>
+      }
+    }
   }
 }
 

@@ -66,9 +66,6 @@ export default class TicTacToe extends Component {
             })}
           </View>
         </View>
-      <View>
-
-      </View>
 
         <TabBarIOS tintColor='#FF414B'>
           <Icon.TabBarItemIOS

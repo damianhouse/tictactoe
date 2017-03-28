@@ -1,29 +1,32 @@
 import React, { Component } from 'react'
 import './App.css';
 import Board from './Components/board'
+import Scores from './Components/scores'
 
 class App extends Component {
   constructor(props) {
     super(props)
-    const defaultBoard = {
-      playerOne: {
-        symbol: 'X',
-        wins: 0,
-      },
-      playerTwo: {
-        symbol: 'O',
-        wins: 0,
-      },
-      currentTurn: 'X',
-      board: [
-        "", "", "", "", "", "", "", "", ""
-      ],
-      draws: 0,
-      winner: null
-    }
-    this.state = defaultBoard
+    this.state = {}
   }
 
+  componentWillMount() {
+    this.setState({
+        playerOne: {
+          symbol: 'X',
+          wins: 0,
+        },
+        playerTwo: {
+          symbol: 'O',
+          wins: 0,
+        },
+        currentTurn: 'X',
+        board: [
+          "", "", "", "", "", "", "", "", ""
+        ],
+        draws: 0,
+        winner: null
+    })
+  }
   checkForWinner() {
     let winningCombos = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]]
     return winningCombos.find((combo) => {
@@ -122,13 +125,9 @@ class App extends Component {
     return (
       <div className="render-target">
         <div className="header">Tic Tac Toe</div>
-        <div className="scores">
-          <div className="score">Player X: {this.state.playerOne.wins}</div>
-          <div className="score">Draws: {this.state.draws}</div>
-          <div className="score">Player O: {this.state.playerTwo.wins}</div>
-        </div>
+        <Scores state={this.state} />
         <button className="button" onClick={() => this.resetGameState()}>Restart Game</button>
-        <Board state={this.state} />
+        <Board state={this.state} handleClick={this.handleClick.bind(this)}/>
         <button className="button" onClick={() => this.resetMatchState()}>Restart Match</button>
       </div>
     );

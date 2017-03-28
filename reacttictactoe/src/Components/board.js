@@ -1,19 +1,9 @@
 import React, { Component } from 'react';
-import App from '../App'
+import Square from './square'
+
 class Board extends Component {
   handleClick(index) {
-    console.log(this.props.state.playerOne.symbol)
-    if(this.props.state.board[index] === "") {
-      if(this.props.state.winner === null) {
-        this.props.state.board[index] = this.props.state.currentTurn
-        if(this.checkForWinner() || this.checkDraw()) {
-          this.adjustScores()
-        }
-        this.setState({
-          currentTurn: this.props.state.currentTurn === this.props.state.playerOne.symbol ? this.props.state.playerTwo.symbol : this.props.state.playerOne.symbol
-        })
-      }
-    }
+    this.props.handleClick(index)
   }
 
   checkForWinner() {
@@ -41,26 +31,12 @@ class Board extends Component {
   }
 
   render() {
-    var state = this.props.state
+    let board = this.props.state.board.map((cell, index) => {
+      return <Square key={index} cell={cell} index={index} state={this.props.state} handleClick={this.handleClick.bind(this)}/>
+    })
     return (
-      <div className="board">
-        {state.board.map((cell, index) => {
-          if(state.winner === null) {
-              return <div key={index} onClick={() => this.handleClick(index)} className="square">
-                  <div>{cell}</div>
-              </div>
-            } else {
-              if(state.winner[0] === index || state.winner[1] === index || state.winner[2] === index) {
-                return <div key={index} onClick={() => this.handleClick(index)} className="square green">
-                    <div>{cell}</div>
-                </div>
-              } else {
-                return <div key={index} onClick={() => this.handleClick(index)} className="square">
-                    <div>{cell}</div>
-                </div>
-              }
-            }
-        })}
+      <div key="board" className="board">
+        {board}
       </div>
     )
   }
