@@ -1,0 +1,354 @@
+<html>
+
+<head>
+  <style>
+    @media screen and (min-width: 450px) {
+      body {
+        background-color: #555555;
+        color: #FFFFFF;
+        font-family: sans-serif;
+      }
+      .render-target {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+      .header {
+        display: flex;
+        height: 100px;
+        width: 100vw;
+        background-color: #FF414B;
+        justify-content: center;
+        align-items: center;
+        font-size: 3em;
+        padding-top: 0;
+      }
+      .board {
+        display: flex;
+        width: 300px;
+        height: 300px;
+        justify-content: center;
+        flex-flow: row wrap;
+        padding-top: 12px;
+        padding-bottom: 25px;
+
+      }
+      .green {
+        background-color: #88C13D;
+      }
+      .square {
+        height: 100px;
+        width: 100px;
+        border: 5px solid #00B3FA;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        font-size: 5em;
+        color: #FFFFFF;
+      }
+      .square:hover {
+        background-color: #88C13D;
+        cursor: pointer;
+      }
+      .center-buttons {
+        padding-top: 15px;
+        max-width: 50%;
+      }
+      .scores {
+        display: flex;
+        font-size: 2em;
+        color: #FFFFFF;
+      }
+      .score {
+        padding: 10px;
+      }
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        border-radius: 5px;
+        height: auto;
+        padding: 8px;
+        background-color: #88C13D;
+      }
+      .center-buttons {
+        display: flex;
+        flex-flow: column;
+      }
+      .button-div {
+        padding: 5px;
+      }
+    }
+    @media only screen
+    and (min-device-width: 320px)
+    and (max-device-width: 480px)
+    and (-webkit-min-device-pixel-ratio: 2) {
+      body {
+        background-color: #555555;
+        color: #FFFFFF;
+        font-family: sans-serif;
+      }
+      .render-target {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+      }
+      .header {
+        display: flex;
+        height: 20vw;
+        width: 100vw;
+        background-color: #FF414B;
+        justify-content: center;
+        align-items: center;
+        font-size: 5em;
+      }
+      .board {
+        display: flex;
+        width: 90vw;
+        height: 90vw;
+        justify-content: center;
+        flex-flow: row wrap;
+      }
+      .green {
+        background-color: #88C13D;
+      }
+      .square {
+        height: 30vw;
+        width: 30vw;
+        border: 1.5vw solid #00B3FA;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 10em;
+        color: #FFFFFF;
+      }
+      .square:hover {
+        background-color: #88C13D;
+        cursor: pointer;
+      }
+      .scores {
+        display: flex;
+        font-size: 4em;
+        color: #FFFFFF;
+      }
+      .score {
+        padding: 5vw;
+      }
+      .button {
+        background-color: #4CAF50; /* Green */
+        border: none;
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 3.5em;
+        border-radius: 20px;
+        padding: 30px;
+        background-color: #88C13D;
+      }
+      .center-buttons {
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: center;
+        padding-top: 15px;
+        max-width: 50%;
+      }
+    }
+  }
+  </style>
+</head>
+<body>
+  <div class="render-target"></div>
+  <script>
+    let gameState = {
+      playerOne: {
+        symbol: 'X',
+        wins: 0
+      },
+      playerTwo: {
+        symbol: 'O',
+        wins: 0
+      },
+      currentTurn: 'X',
+      board: [
+        "", "", "", "", "", "", "", "", ""
+      ],
+      winningCombo: null,
+      draws: 0
+    }
+
+    function render(state) {
+      document.querySelector(".render-target").innerHTML = buildDom(state)
+      bindClickDom()
+      bindClickButton()
+      if(state.winningCombo !== null || checkDraw()) {
+        bindClickResetButton()
+        addScore()
+      }
+      return
+    }
+
+    render(gameState)
+    bindClickDom()
+
+    function buildDom(state) {
+      let resetButton = createRestartMatchButton()
+      let startOverButton = createStartOverButton()
+      let dom = '<div class="header">Tic-tac-toe</div><div class="scores"><div class="score"><strong> X: </strong>' + state.playerOne.wins + '  </div>' + '<div class="score"><strong> Draws: </strong>  ' + state.draws + '  </div>' + '<div class="score"><strong> O:  </strong>' + '  ' + state.playerTwo.wins + '  </div>' + '</div><div class="button-div">' + createStartOverButton() +'</div><div class="board">'
+      for(i=0; i <= 8; i++) {
+        if(state.winningCombo === null) {
+          dom = dom +'<div class="square" data-square-id="' + i +'">' + state.board[i] + '</div>'
+        } else {
+          if(state.winningCombo[0] === i || state.winningCombo[1] === i || state.winningCombo[2] === i){
+            dom = dom +'<div class="square green" data-square-id="' + i +'">' + state.board[i] + '</div>'
+          } else {
+            dom = dom +'<div class="square" data-square-id="' + i +'">' + state.board[i] + '</div>'
+          }
+        }
+        if(i===8) {
+          if(state.winningCombo === null) {
+            if(checkDraw()) {
+              return dom = dom + '<div class="center-buttons">' + resetButton + '</div>'
+            }
+          } else {
+            return dom = dom +'<div class="center-buttons">' + resetButton + '</div>'
+          }
+        }
+      }
+      return dom
+    }
+
+    function createRestartMatchButton() {
+      if(checkDraw()) {
+        return '<div class="button-div"><button class="button reset-button">Do-over</button></div>'
+      } else {
+        return '<button class="button reset-button">New Match</button>'
+      }
+    }
+
+    function createStartOverButton() {
+      return '<div class="button-div"><button class="button start-over">Restart Game</button></div>'
+    }
+
+    function bindClickButton() {
+      let button = document.querySelector('.start-over')
+      button.addEventListener("click", function(e) {
+        resetGameState()
+      })
+    }
+
+    function bindClickResetButton() {
+      let button = document.querySelector('.reset-button')
+      button.addEventListener("click", function(e) {
+        resetMatchState()
+      })
+    }
+
+    function resetGameState() {
+      gameState = {
+        playerOne: {
+          symbol: 'X',
+          wins: 0
+        },
+        playerTwo: {
+          symbol: 'O',
+          wins: 0
+        },
+        currentTurn: 'X',
+        board: [
+          "", "", "", "", "", "", "", "", ""
+        ],
+        winningCombo: null,
+        draws: 0
+      }
+      render(gameState)
+    }
+
+    function resetWinningCombo() {
+      gameState.winningCombo = null
+    }
+
+    function resetMatchState() {
+      let playerOneWins = gameState.playerOne.wins
+      let playerTwoWins = gameState.playerTwo.wins
+      let draws = gameState.draws
+      gameState = {
+        playerOne: {
+          symbol: 'X',
+          wins: playerOneWins
+        },
+        playerTwo: {
+          symbol: 'O',
+          wins: playerTwoWins
+        },
+        currentTurn: 'X',
+        board: [
+          "", "", "", "", "", "", "", "", ""
+        ],
+        winningCombo: null,
+        draws: draws
+      }
+      render(gameState)
+    }
+
+    function addScore() {
+      if(checkDraw()) {
+        gameState.draws += 1
+      } else if(gameState.board[gameState.winningCombo[0]] === gameState.playerOne.symbol) {
+        gameState.playerOne.wins += 1
+      } else {
+        gameState.playerTwo.wins += 1
+      }
+    }
+
+    function checkDraw() {
+      let board = gameState.board
+      return (board[0] === 'X' || board[0] === 'O') && (board[1] === 'X' || board[1] === 'O') && (board[2] === 'X' || board[2] === 'O') &&
+             (board[3] === 'X' || board[3] === 'O') && (board[4] === 'X' || board[4] === 'O') && (board[5] === 'X' || board[5] === 'O') &&
+             (board[6] === 'X' || board[6] === 'O') && (board[7] === 'X' || board[7] === 'O') && (board[8] === 'X' || board[8] === 'O')
+    }
+
+    function bindClickDom() {
+      let board = document.querySelector('.board')
+      let winner
+      board.addEventListener("click", function(e) {
+        if(gameState.winningCombo === null) {
+          if(e.target.innerHTML === "") {
+            gameState.board[e.target.dataset['squareId']] = gameState.currentTurn
+            winner = checkForWinner()
+            if(winner) {
+              gameState.winningCombo = winner
+              alert(gameState.currentTurn + " is the winner!");
+            }
+            render(gameState)
+            gameState.currentTurn = gameState.currentTurn === gameState.playerOne.symbol ? gameState.playerTwo.symbol : gameState.playerOne.symbol
+          }
+        }
+      })
+    }
+
+    function checkForWinner() {
+      let board = gameState.board
+      let winningCombos = [[0, 1, 2], [0, 3, 6], [1, 4, 7], [2, 5, 8], [3, 4, 5], [6, 7, 8], [2, 4, 6], [0, 4, 8]]
+      let symbols = board.map((square) => {
+        return square == "" ? null : square
+      })
+      return winningCombos.find((combo) => {
+        if(symbols[combo[0]] == symbols[combo[1]] && symbols[combo[1]] == symbols[combo[2]]) {
+          return symbols[combo[0]]
+        } else {
+          return false
+        }
+      })
+    }
+  </script>
+</body>
+</html>
