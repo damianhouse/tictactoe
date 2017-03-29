@@ -101,16 +101,14 @@ class App extends Component {
     })
   }
 
-  resetGameState() {
-    this.setState({
-      state: this.defaultBoard
-    })
-  }
-
   handleClick(index) {
     if(this.state.board[index] === "") {
       if(this.state.winner === null) {
-        this.state.board[index] = this.state.currentTurn
+        let board = this.state.board
+        board[index] = this.state.currentTurn
+        this.setState({
+          board: board
+        })
         if(this.checkForWinner() || this.checkDraw()) {
           this.adjustScores()
         }
@@ -126,7 +124,7 @@ class App extends Component {
       <div className="render-target">
         <div className="header">Tic Tac Toe</div>
         <Scores state={this.state} />
-        <button className="button" onClick={() => this.resetGameState()}>Restart Game</button>
+        <button className="button" onClick={() => this.componentWillMount()}>Restart Game</button>
         <Board state={this.state} handleClick={this.handleClick.bind(this)}/>
         <button className="button" onClick={() => this.resetMatchState()}>Restart Match</button>
       </div>

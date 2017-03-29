@@ -17,6 +17,54 @@ describe('<App />', () => {
     const wrapper = mount(<App />);
     expect(wrapper.state().draws).toEqual(0);
   });
+
+  it('checkDraw returns true and false', () => {
+    const board = ["X", "O", "X", "X", "X", "O", "O", "X", "O"];
+    const wrapper = mount(<App />);
+    expect(wrapper.instance().checkDraw()).toEqual(false);
+    wrapper.state().board = board;
+    expect(wrapper.instance().checkDraw()).toEqual(true);
+  });
+
+  it('checkForWinner returns true and false', () => {
+    const board = ["X", "O", "", "", "X", "O", "", "", "X"];
+    const wrapper = mount(<App />);
+    expect(wrapper.instance().checkForWinner()).toEqual(undefined);
+    wrapper.state().board = board;
+    expect(wrapper.instance().checkForWinner()).toEqual([ 0, 4, 8 ]);
+  });
+
+  it('boardHasCombo returns true and false', () => {
+    const board = ["X", "O", "", "", "X", "O", "", "", "X"];
+    const wrapper = mount(<App />);
+    expect(wrapper.instance().boardHasCombo([ 0, 4, 8 ])).toEqual(false);
+    wrapper.state().board = board;
+    expect(wrapper.instance().boardHasCombo([ 0, 4, 8 ])).toEqual(true);
+  });
+
+  it('adjustScores updates state.draws', () => {
+    const wrapper = mount(<App />);
+    wrapper.instance().adjustScores();
+    expect(wrapper.state().draws).toEqual(1);
+  });
+
+  it('adjustScores updates state.playerOne.wins', () => {
+    const board = ["X", "O", "", "", "X", "O", "", "", "X"];
+    const wrapper = mount(<App />);
+    wrapper.state().board = board;
+    wrapper.state().winner = [ 0, 4, 8 ];
+    wrapper.instance().adjustScores();
+    expect(wrapper.state().playerOne.wins).toEqual(1);
+  });
+
+  it('adjustScores updates state.playerOne.wins', () => {
+    const board = ["X", "O", "", "", "X", "O", "", "", "X"];
+    const wrapper = mount(<App />);
+    wrapper.state().board = board;
+    wrapper.state().winner = [ 0, 4, 8 ];
+    wrapper.instance().adjustScores();
+    expect(wrapper.state().playerOne.wins).toEqual(1);
+  });
 })
 
 describe('<Scores />', () => {
